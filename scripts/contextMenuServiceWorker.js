@@ -9,6 +9,21 @@ const getKey = () => {
     });
 };
 
+const sendMessage = (content) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const activeTab = tabs[0].id;
+
+        chrome.tabs.sendMessage(
+        activeTab,
+        { message: 'inject', content },
+        (response) => {
+            if (response.status === 'failed') {
+            console.log('injection failed.');
+            }
+        });
+    });
+};
+
 const generate = async (prompt) => {
     // Get your API key from storage
     const key = await getKey();
@@ -36,6 +51,8 @@ const generate = async (prompt) => {
 
 const generateCompletionAction = async (info) => {
     try {
+        sendMessage('generating...');
+
         const { selectionText } = info;
         const basePromptPrefix = `help me complete the following sentence: `;
 
@@ -54,9 +71,10 @@ const generateCompletionAction = async (info) => {
         `;
 
         const secondPromptCompletion = await generate(secondPrompt);
-        console.log(secondPromptCompletion.text);
+        sendMessage(secondPromptCompletion.text);
     } catch (error) {
         console.log(error);
+        sendMessage(error.toString());
     }
 };
 
