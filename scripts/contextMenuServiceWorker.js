@@ -54,7 +54,11 @@ const generateCompletionAction = async (info) => {
         sendMessage('generating...');
 
         const { selectionText } = info;
-        const basePromptPrefix = `help me complete the following sentence: `;
+        const basePromptPrefix = `
+        Write me a detailed table of contents for a blog post with the title below.
+                
+        Title:
+        `;
 
         const baseCompletion = await generate(
             `${basePromptPrefix}${selectionText}`
@@ -62,11 +66,11 @@ const generateCompletionAction = async (info) => {
 
         const secondPrompt = `
         Take the table of contents and title of the blog post below and generate a blog post written in thwe style of Paul Graham. Make it feel like a story. Don't just list the points. Go deep into each one. Explain why.
-
+        
         Title: ${selectionText}
-
+        
         Table of Contents: ${baseCompletion.text}
-
+        
         Blog Post:
         `;
 
